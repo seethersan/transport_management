@@ -1,0 +1,51 @@
+services:
+  # PostgreSQL with PostGIS for geospatial data
+  db:
+    image: postgis/postgis:13-3.1-alpine
+    environment:
+      POSTGRES_DB: mozio
+      POSTGRES_USER: mozio_user
+      POSTGRES_PASSWORD: mozio_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mozio-network
+
+  # Redis for caching
+  redis:
+    image: redis:alpine
+    networks:
+      - mozio-network
+
+  # Django App service
+  web:
+    build: ./app
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: transport_management.settings
+      DATABASE_NAME: mozio
+      DATABASE_USER: mozio_user
+      DATABASE_PASSWORD: mozio_password
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      REDIS_URL: redis://redis:6379/1
+    env_file:
+      - .env
+    networks:
+      - mozio-network
+
+volumes:
+  postgres_data:
+
+networks:
+  mozio-network:
