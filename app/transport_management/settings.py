@@ -27,10 +27,11 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "FALSE") == "TRUE"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
+GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
 
 # Application definition
 
