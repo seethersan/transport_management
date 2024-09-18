@@ -33,11 +33,17 @@ def find_service_areas(request):
     lng = float(request.GET.get("lng"))
     cache_key = f"service_areas_{lat}_{lng}"
 
-    data = cache.get(cache_key)
+    try:
+        data = cache.get(cache_key)
+    except:
+        data = None
     if not data:
         point = Point(lng, lat, srid=4326)
         service_areas = ServiceArea.objects.filter(geojson__contains=point)
         data = ServiceAreaSerializer(service_areas, many=True).data
-        cache.set(cache_key, data, timeout=60 * 15)  # Cache for 15 minutes
+        try:
+            cache.set(cache_key, data, timeout=60 * 15)  # Cache for 15 minutes
+        except:
+            pass
 
     return Response(data)

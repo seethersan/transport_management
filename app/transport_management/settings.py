@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "drf_yasg",
     "rest_framework",
+    'rest_framework_gis',
     "providers",
     "service_areas",
 ]
@@ -114,6 +115,8 @@ if "REDIS_URL" in os.environ:
             "LOCATION": f"{redis_url.scheme}://{redis_url.hostname}:{redis_url.port}/0",
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "SOCKET_TIMEOUT": 5,
+                "SOCKET_CONNECT_TIMEOUT": 5,
             },
         }
     }
