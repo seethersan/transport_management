@@ -1,3 +1,4 @@
+import logging
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -7,6 +8,10 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .models import ServiceArea
 from .serializers import ServiceAreaSerializer
+
+
+# Create a logger instance
+logger = logging.getLogger(__name__)
 
 
 class ServiceAreaViewSet(viewsets.ModelViewSet):
@@ -35,7 +40,8 @@ def find_service_areas(request):
 
     try:
         data = cache.get(cache_key)
-    except:
+    except Exception as e:
+        logger.error(f"Error getting cache data: {e}")
         data = None
     if not data:
         point = Point(lng, lat, srid=4326)
@@ -43,7 +49,7 @@ def find_service_areas(request):
         data = ServiceAreaSerializer(service_areas, many=True).data
         try:
             cache.set(cache_key, data, timeout=60 * 15)  # Cache for 15 minutes
-        except:
-            pass
+        except Exception as e:
+            logger.error(f"Error setting cache data: {e}")
 
     return Response(data)

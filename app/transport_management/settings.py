@@ -31,7 +31,7 @@ DEBUG = os.getenv("DEBUG", "FALSE") == "TRUE"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
-GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
+GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH")
 
 # Application definition
 
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "drf_yasg",
     "rest_framework",
-    'rest_framework_gis',
+    "rest_framework_gis",
     "providers",
     "service_areas",
 ]
@@ -79,6 +79,27 @@ TEMPLATES = [
         },
     },
 ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "debug.log",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
 
 WSGI_APPLICATION = "transport_management.wsgi.application"
 
